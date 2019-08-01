@@ -5,7 +5,24 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    
+  <div class="wrapper">
+    <h2>Todo List</h2>
+    <div class="filter">
+      <span>All</span>
+      <span>Not Done</span>
+      <span>Done</span>
+    </div>
+    <ul class="todoList">
+      <li>Loading Todo...</li>
+    </ul>
+    <form class="add-items">
+      <input type="text" name="item" placeholder="Item Name" required>
+      <input type="submit" value="+ Add Item">
+    </form>
+  </div>
+
+  <script src="/javascripts/todolist.js"></script>
+
   </body>
 </html>
