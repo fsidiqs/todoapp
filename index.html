@@ -2,16 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>LocalStorage</title>
+  <title>Todo List</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div class="wrapper">
     <h2>Todo List</h2>
-    <p></p>
+    <div class="filter">
+      <span>All</span>
+      <span>Not Done</span>
+      <span>Done</span>
+    </div>
     <ul class="todoList">
-      <li>Loading Tapas...</li>
+      <li>Loading Todo...</li>
     </ul>
     <form class="add-items">
       <input type="text" name="item" placeholder="Item Name" required>
@@ -43,7 +47,8 @@
       return `
         <li>
         <input type="checkbox" data-index=${i} id="item${i}" ${todo.done ? 'checked':''}/>
-          <label for="item${i}">${todo.text}</label>
+        <label for="item${i}">${todo.text}</label>
+        <span class="delete">❌</span>
         </li>
       `;
     }).join('');
