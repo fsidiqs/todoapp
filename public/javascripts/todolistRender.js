@@ -4,13 +4,13 @@
 const addItems = document.querySelector('.add-items');
 const todoList = document.querySelector('.todoList');
 const filterList = document.querySelector('.filterList');
-const Url = `${hostUrl}/todolist/gettodolist`;
-
 let todos;
 let todoListDelete;
 
 (async function(){
-    await fetch(Url).then(data =>data.json()).then(res=>{console.log(res); todos = [...res]})
+    const Url = `${hostUrl}/todolist/gettodolist`;
+
+    await fetch(Url).then(data =>data.json()).then(res=>{todos = [...res]})
     await populateList(todos, todoList);
 })()
 
@@ -20,21 +20,32 @@ let todoListDelete;
 
 async function addItem(e) {
     e.preventDefault();
-    const Url = `${hostUrl}/todolist/`;
+    const UrlPost = `${hostUrl}/todolist`;
+
     const text = (this.querySelector('[name=item]')).value;
     const todo = {
         text,
         done: false
     }
-    // const optParam = {
-    //     headers:{
-    //         "content-type":"application/json; charset=UTF-8"
-    //     },
-    //     body:todo,
-    //     method:"POST"
-    // }
-    // fetch(Url, optParam)
-    populateList(todos, todoList);
+    const optParam = {
+        method:"POST",
+        headers:{
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body:JSON.stringify({todo})       
+    }
+    const addItem = await fetch(UrlPost, optParam).then(data=>data.json()).then(res=>res)
+    
+    if(await addItem === "success"){
+        console.log("aqq")
+        const UrlGet = `${hostUrl}/todolist/gettodolist`;
+
+        await fetch(UrlGet).then(data =>data.json()).then(res=>{todos = [...res]})
+        await populateList(todos, todoList);
+        console.log("awq")
+
+    }
     // axios.post('')
     // localStorage.setItem('todos', JSON.stringify(todos));
     // todolist_controller.todo_post
@@ -44,7 +55,6 @@ async function addItem(e) {
 
 
 function populateList(todos = [], todoList) {
-    console.log("asd")
     todoList.innerHTML = todos.map((todo, i) => {
         return `
         <li>
