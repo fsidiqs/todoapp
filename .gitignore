@@ -1,5 +1,8 @@
 node_modules/*
+package-lock.json
+
+
+#misc
 .env
 .eslintrc.js
-mongoDBKey.js
-package-lock.json
+.env.default
