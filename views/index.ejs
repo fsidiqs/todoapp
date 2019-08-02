@@ -3,26 +3,26 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script>let hostUrl =  <%- JSON.stringify(hostUrl) %>;</script>
   </head>
   <body>
-    
   <div class="wrapper">
     <h2>Todo List</h2>
-    <div class="filter">
-      <span>All</span>
-      <span>Not Done</span>
-      <span>Done</span>
+    <div class="filterList">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="not-done">Active</button>
+      <button data-filter="done">Done</button>
     </div>
     <ul class="todoList">
-      <li>Loading Todo...</li>
+      <li>Empty</li>
     </ul>
-    <form class="add-items">
+    <form class="add-items" method="POST">
       <input type="text" name="item" placeholder="Item Name" required>
       <input type="submit" value="+ Add Item">
     </form>
   </div>
 
-  <script src="/javascripts/todolist.js"></script>
+  <script src="/javascripts/todolistRender.js"></script>
 
   </body>
 </html>

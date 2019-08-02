@@ -30,18 +30,24 @@ html {
   flex: 1 1 calc(50% - 20px);
 }
 
-.wrapper .filter{
+.wrapper .filterList{
   flex:1 1 calc(50% - 20px);
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.wrapper .filter span{
+.wrapper .filterList button{
   border: 1px rgba(44, 44, 44, 0.95) solid;
   border-radius: 5px;
   line-height: 3ch;
   padding: 2px;
+  cursor: pointer;
+}
+
+.wrapper .filterList button.active{
+  border:none;
+  background: #3eb3de;
 }
 
 h2 {

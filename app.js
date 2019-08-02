@@ -4,11 +4,19 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+// var mongoDBKey = require('./mongoDBKey');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var todolistRouter = require('./routes/todolist');
 var app = express();
 
+var mongoose = require('mongoose');
+var uri = 'mongodb+srv://todoUser:123Perfect123!@cluster0-6t6vp.mongodb.net/todolist?retryWrites=true&w=majority' 
+mongoose.connect(uri, {useNewUrlParser: true});
+var db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'MongoDB connection error: '));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -18,6 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/axios', express.static(__dirname + '/node_modules/axios'));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
