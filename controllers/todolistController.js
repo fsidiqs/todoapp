@@ -74,7 +74,7 @@ exports.todo_update = [
 
       Todo
         .findByIdAndUpdate(req.params.id, {done: !req.done})
-        .exec(function(err, result){
+        .exec(function(err){
             if(err){return next(err);}
             res.send(JSON.stringify('success'));
         })
@@ -82,3 +82,12 @@ exports.todo_update = [
 
 
 ]
+
+exports.todo_delete = function(req, res, next){
+    Todo.findByIdAndDelete(req.params.id)
+        .exec(function(err){
+            if(err){return next(err);}
+            console.log(req.params.id)
+            res.send(JSON.stringify('success'));
+        })
+}

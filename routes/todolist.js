@@ -9,6 +9,8 @@ router.post('/', todolist_controller.todo_post);
 
 router.get('/gettodolist', todolist_controller.gettodolist_get);
 
-router.put('/:id', todolist_controller.todo_update);
+router.put('/:id/update', todolist_controller.todo_update);
+
+router.delete('/:id/delete', todolist_controller.todo_delete);
 
 module.exports = router;

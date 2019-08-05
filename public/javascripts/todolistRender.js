@@ -68,7 +68,7 @@ async function toggleDone(e) {
         }   
     }
 
-    await fetch(todoUrl + '/' + _id, optParam)
+    await fetch(todoUrl + '/' + _id + '/update', optParam)
     .then(async () => { 
         await getTodolist();
         await populateList(todos, todoList);
@@ -79,6 +79,7 @@ async function toggleDone(e) {
 async function deleteTodo(e) {
     const el = e.target;
     const _id = el.dataset._id;
+    console.log(_id);
     const optParam = {
         method: "DELETE",
         headers: {
@@ -86,7 +87,7 @@ async function deleteTodo(e) {
             'Content-Type': 'application/json'
         }
     }
-    await fetch(todoUrl + '/' + _id, optParam)
+    await fetch(todoUrl + '/' + _id + '/delete', optParam)
     .then(async () => { 
         await getTodolist();
         await populateList(todos, todoList);
@@ -102,7 +103,7 @@ function populateList(todos = [], todoList) {
         <li>
         <input class='todoCheck' type="checkbox" data-_id=${todo._id} id="item${todo._id}" ${todo.done ? 'checked':''}/>
         <label for="item${todo._id}">${todo.text}</label>
-        <input type="button" class="delete" value="❌" data-index=${todo._id} > 
+        <input type="button" class="delete" value="❌" data-_id=${todo._id} > 
         </li>
         `;
         })
