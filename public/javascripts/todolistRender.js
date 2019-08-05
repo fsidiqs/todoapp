@@ -1,7 +1,3 @@
-
-
-// const todolist_controller = require(path.join(__dirname, 'controllers/todolistController'))
-
 const addItems = document.querySelector('.add-items');
 const todoList = document.querySelector('.todoList');
 const filterList = document.querySelector('.filterList');
@@ -11,7 +7,7 @@ const todoUrl = `${hostUrl}/todolist`;
 
 let todos;
 let todoListDelete;
-
+let selectedFilter;
 
 
 
@@ -47,7 +43,7 @@ async function addItem(e) {
     const addItem = await fetch(todoUrl, optParam).then(data => data.json()).then(res => res)
     if (await addItem === "success") {
         await getTodolist();
-        await populateList(todos, todoList);
+        await populateList(filterTodo(), todoList);
 
     }
     this.reset();
@@ -71,7 +67,7 @@ async function toggleDone(e) {
     await fetch(todoUrl + '/' + _id + '/update', optParam)
     .then(async () => { 
         await getTodolist();
-        await populateList(todos, todoList);
+        await populateList(filterTodo(), todoList);
     })
     .catch(error => console.error('Error:', error));
 }
@@ -79,7 +75,6 @@ async function toggleDone(e) {
 async function deleteTodo(e) {
     const el = e.target;
     const _id = el.dataset._id;
-    console.log(_id);
     const optParam = {
         method: "DELETE",
         headers: {
@@ -90,9 +85,23 @@ async function deleteTodo(e) {
     await fetch(todoUrl + '/' + _id + '/delete', optParam)
     .then(async () => { 
         await getTodolist();
-        await populateList(todos, todoList);
+        await populateList(filterTodo(), todoList);
     })
     .catch(error => console.error('Error:', error));
+}
+
+
+function filterEvent(e){
+    if (!e.target.matches('button[data-filter]')) return;
+    const el = e.target;
+    selectedFilter = el.dataset.filter;
+    populateList(filterTodo(), todoList);
+    renderFilterlist(selectedFilter);
+}
+
+function filterTodo(){
+    return todos
+    .filter((todo) => selectedFilter === "done" ? todo.done : selectedFilter === "not-done" ? todo.done === false : true);
 }
 
 function populateList(todos = [], todoList) {
@@ -107,7 +116,7 @@ function populateList(todos = [], todoList) {
         </li>
         `;
         })
-        .join('');
+        .join('')   ;
     if (todoList.length != 0 && todoList != null) {
         todoListDelete = document.querySelectorAll('.todoList .delete');
         todoListDelete.forEach(deleteButton => {
@@ -117,15 +126,18 @@ function populateList(todos = [], todoList) {
     }
 }
 
-// function filterTodo(e){
-//     const el = e.target;
-//     const filter = el.dataset.filter;
-//     filterSelected = filter;
+function renderFilterlist(selectedFilter = "all"){
+    
+    if(todos.length === 0 ) {filterList.innerHTML = 'No Todos'; return}
+    filterList.innerHTML = `
+    <button ${selectedFilter==="all"?'class="active"':''} data-filter="all">All</button>
+    <button ${selectedFilter==="not-done"?'class="active"':''} data-filter="not-done">Active</button>
+    <button ${selectedFilter==="done"?'class="active"':''} data-filter="done">Done</button>
+    `
+    console.log(todos.length)
 
-//     localStorage.setItem('filterSelected', JSON.stringify(filterSelected));
-//     populateFilter(filterSelected, filterList)
-//     populateList(todos, todoList, filterSelected)
-// }
+}
+
 
 // function populateFilter(filterSelected = 0, filterList){
 //     filterList.innerHTML = 
@@ -139,13 +151,12 @@ function populateList(todos = [], todoList) {
 (async function () {
     await getTodolist();
     await populateList(todos, todoList);
+    await renderFilterlist()
+    console.log(todos.length)
 })() 
 
 addItems.addEventListener('submit', addItem);
 todoList.addEventListener('click', toggleDone);
-
-
-
-// filterList.addEventListener('click', filterTodo);
+filterList.addEventListener('click', filterEvent);
 
 // populateFilter(filterSelected,filterList)
