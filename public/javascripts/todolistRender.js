@@ -1,19 +1,18 @@
 const hostUrl = 'https://todoappfajar.herokuapp.com'
+
 const addItems = document.querySelector('.add-items');
 const todoList = document.querySelector('.todoList');
 const filterList = document.querySelector('.filterList');
 const getTodolistUrl = `${hostUrl}/todolist/gettodolist`;
 const todoUrl = `${hostUrl}/todolist`;
 
-
-let todos;
 let todoListDelete;
 let selectedFilter;
 
 
 
 function getTodolist() {
- fetch(getTodolistUrl).then(data => data.json()).then(res => {todos = [...res]});
+ return fetch(getTodolistUrl).then(data => data.json());
 }
 
 async function addItem(e) {
@@ -37,8 +36,8 @@ async function addItem(e) {
 
     const addItem = await fetch(todoUrl, optParam).then(data => data.json()).then(res => res)
     if (await addItem === "success") {
-        await getTodolist();
-        await populateList(filterTodo(), todoList);
+       
+        await populateList(await getTodolist(), todoList);
 
     }
     this.reset();
@@ -61,8 +60,7 @@ async function toggleDone(e) {
 
     await fetch(todoUrl + '/' + _id + '/update', optParam)
     .then(async () => { 
-        await getTodolist();
-        await populateList(filterTodo(), todoList);
+        await populateList(await getTodolist(), todoList);
     })
     .catch(error => console.error('Error:', error));
 }
@@ -79,30 +77,25 @@ async function deleteTodo(e) {
     }
     await fetch(todoUrl + '/' + _id + '/delete', optParam)
     .then(async () => { 
-        await getTodolist();
-        await populateList(filterTodo(), todoList);
+        await populateList(await getTodolist(), todoList);
     })
     .catch(error => console.error('Error:', error));
 }
 
 
-function filterEvent(e){
+async function filterEvent(e){
     if (!e.target.matches('button[data-filter]')) return;
     const el = e.target;
     selectedFilter = el.dataset.filter;
-    populateList(filterTodo(), todoList);
-    renderFilterlist(selectedFilter);
+    await populateList(await getTodolist(), todoList);
+
 }
 
-function filterTodo(){
-    return todos
-    .filter((todo) => selectedFilter === "done" ? todo.done : selectedFilter === "not-done" ? todo.done === false : true);
-}
+
 
 function populateList(todos = [], todoList) {
-    
-    todoList.innerHTML = todos.map((todo) => {
-     
+    if(selectedFilter !== "all"){todos = todos.filter((todo) => selectedFilter === "done" ? todo.done : selectedFilter === "not-done" ? todo.done === false : true);}
+    todoList.innerHTML = todos.map((todo) => { 
             return `
         <li>
         <input class='todoCheck' type="checkbox" data-_id=${todo._id} id="item${todo._id}" ${todo.done ? 'checked':''}/>
@@ -118,15 +111,14 @@ function populateList(todos = [], todoList) {
         todoListDelete.forEach(deleteButton => {
             deleteButton.addEventListener('click', deleteTodo)
         });
-
     }
 
-    
+    renderFilterlist(selectedFilter);
 }
 
 function renderFilterlist(selectedFilter = "all"){
     
-    if(todos.length === 0 ) {filterList.innerHTML = 'No Todos'; return}
+   
     filterList.innerHTML = `
     <button ${selectedFilter==="all"?'class="active"':''} data-filter="all">All</button>
     <button ${selectedFilter==="not-done"?'class="active"':''} data-filter="not-done">Active</button>
@@ -137,10 +129,9 @@ function renderFilterlist(selectedFilter = "all"){
 
 //-------Start fetching data
 (async function () {
-    await getTodolist();
-    await renderFilterlist()
-    await populateList(todos, todoList);
    
+    // await renderFilterlist()
+    await populateList(await getTodolist(), todoList);
 })() 
 
 addItems.addEventListener('submit', addItem);
