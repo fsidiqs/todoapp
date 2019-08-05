@@ -1,26 +1,32 @@
 
+
 // const todolist_controller = require(path.join(__dirname, 'controllers/todolistController'))
 
 const addItems = document.querySelector('.add-items');
 const todoList = document.querySelector('.todoList');
 const filterList = document.querySelector('.filterList');
+const getTodolistUrl = `${hostUrl}/todolist/gettodolist`;
+const todoUrl = `${hostUrl}/todolist`;
+
+
 let todos;
 let todoListDelete;
 
-(async function(){
-    const Url = `${hostUrl}/todolist/gettodolist`;
-
-    await fetch(Url).then(data =>data.json()).then(res=>{todos = [...res]})
-    await populateList(todos, todoList);
-})()
 
 
 
+async function getTodolist() {
+    todos = await fetch(getTodolistUrl).then(data => data.json()).then(res => res);
+  
+}
+
+async function getTodo(_id) {
+    return await fetch(todoUrl + '/' + _id).then(data => data.json()).then(res => res);
+}
 // let filterSelectIndex = JSON.parse(localStorage.getItem('filterSelectIndex'));
 
 async function addItem(e) {
     e.preventDefault();
-    const UrlPost = `${hostUrl}/todolist`;
 
     const text = (this.querySelector('[name=item]')).value;
     const todo = {
@@ -28,76 +34,93 @@ async function addItem(e) {
         done: false
     }
     const optParam = {
-        method:"POST",
-        headers:{
+        method: "POST",
+        headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        body:JSON.stringify({todo})       
+        body: JSON.stringify({
+            todo
+        })
     }
-    const addItem = await fetch(UrlPost, optParam).then(data=>data.json()).then(res=>res)
-    
-    if(await addItem === "success"){
-        console.log("aqq")
-        const UrlGet = `${hostUrl}/todolist/gettodolist`;
 
-        await fetch(UrlGet).then(data =>data.json()).then(res=>{todos = [...res]})
+    const addItem = await fetch(todoUrl, optParam).then(data => data.json()).then(res => res)
+    if (await addItem === "success") {
+        await getTodolist();
         await populateList(todos, todoList);
-        console.log("awq")
 
     }
-    // axios.post('')
-    // localStorage.setItem('todos', JSON.stringify(todos));
-    // todolist_controller.todo_post
     this.reset();
 }
 
 
+async function toggleDone(e) {
+    if (!e.target.matches('input.todoCheck')) return;
+
+    const el = e.target;
+    const _id = el.dataset._id;
+
+    const optParam = {
+        method: "PUT",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }   
+    }
+
+    await fetch(todoUrl + '/' + _id, optParam)
+    .then(async () => { 
+        await getTodolist();
+        await populateList(todos, todoList);
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+async function deleteTodo(e) {
+    const el = e.target;
+    const _id = el.dataset._id;
+    const optParam = {
+        method: "DELETE",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }
+    await fetch(todoUrl + '/' + _id, optParam)
+    .then(async () => { 
+        await getTodolist();
+        await populateList(todos, todoList);
+    })
+    .catch(error => console.error('Error:', error));
+}
 
 function populateList(todos = [], todoList) {
-    todoList.innerHTML = todos.map((todo, i) => {
-        return `
+    
+    todoList.innerHTML = todos.map((todo) => {
+     
+            return `
         <li>
-        <input class='todoCheck' type="checkbox" data-index=${i} id="item${i}" ${todo.done ? 'checked':''}/>
-        <label for="item${i}">${todo.text}</label>
-        <input type="button" class="delete" value="❌" data-index=${i} > 
+        <input class='todoCheck' type="checkbox" data-_id=${todo._id} id="item${todo._id}" ${todo.done ? 'checked':''}/>
+        <label for="item${todo._id}">${todo.text}</label>
+        <input type="button" class="delete" value="❌" data-index=${todo._id} > 
         </li>
         `;
-    })
-    .join('');
-    if(todoList.length!=0 && todoList != null){
+        })
+        .join('');
+    if (todoList.length != 0 && todoList != null) {
         todoListDelete = document.querySelectorAll('.todoList .delete');
-        todoListDelete.forEach(deleteButton=>{deleteButton.addEventListener('click', deleteTodo)});
+        todoListDelete.forEach(deleteButton => {
+            deleteButton.addEventListener('click', deleteTodo)
+        });
 
     }
-}
-
-
-
-function toggleDone(e) {
-    
-    if (!e.target.matches('input.todoCheck')) return;
-    const el = e.target;
-    const index = el.dataset.index;
-    todos[index].done = !todos[index].done;
-    localStorage.setItem('todos', JSON.stringify(todos));
-    populateList(todos, todoList)
-}
-
-function deleteTodo(e){
-    const el = e.target;
-    const index = el.dataset.index;
-    todos.splice(index, 1);
-    localStorage.setItem('todos', JSON.stringify(todos));
-
-    populateList(todos, todoList);
 }
 
 // function filterTodo(e){
 //     const el = e.target;
 //     const filter = el.dataset.filter;
 //     filterSelected = filter;
-   
+
 //     localStorage.setItem('filterSelected', JSON.stringify(filterSelected));
 //     populateFilter(filterSelected, filterList)
 //     populateList(todos, todoList, filterSelected)
@@ -111,8 +134,17 @@ function deleteTodo(e){
 
 // }
 
+//-------Start fetching data
+(async function () {
+    await getTodolist();
+    await populateList(todos, todoList);
+})() 
+
 addItems.addEventListener('submit', addItem);
 todoList.addEventListener('click', toggleDone);
+
+
+
 // filterList.addEventListener('click', filterTodo);
 
 // populateFilter(filterSelected,filterList)

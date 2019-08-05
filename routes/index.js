@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.redirect('/todolist/sync');
+  res.redirect('/todolist');
 });
 
 module.exports = router;
