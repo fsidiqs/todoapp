@@ -117,6 +117,7 @@ function populateList(todos = [], todoList) {
         `;
         })
         .join('')   ;
+
     if (todoList.length != 0 && todoList != null) {
         todoListDelete = document.querySelectorAll('.todoList .delete');
         todoListDelete.forEach(deleteButton => {
@@ -124,6 +125,8 @@ function populateList(todos = [], todoList) {
         });
 
     }
+
+    renderFilterlist()
 }
 
 function renderFilterlist(selectedFilter = "all"){
@@ -134,7 +137,6 @@ function renderFilterlist(selectedFilter = "all"){
     <button ${selectedFilter==="not-done"?'class="active"':''} data-filter="not-done">Active</button>
     <button ${selectedFilter==="done"?'class="active"':''} data-filter="done">Done</button>
     `
-    console.log(todos.length)
 
 }
 
@@ -151,8 +153,7 @@ function renderFilterlist(selectedFilter = "all"){
 (async function () {
     await getTodolist();
     await populateList(todos, todoList);
-    await renderFilterlist()
-    console.log(todos.length)
+   
 })() 
 
 addItems.addEventListener('submit', addItem);
