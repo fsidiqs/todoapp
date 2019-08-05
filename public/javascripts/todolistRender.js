@@ -12,15 +12,9 @@ let selectedFilter;
 
 
 
-async function getTodolist() {
-    todos = await fetch(getTodolistUrl).then(data => data.json()).then(res => res);
-  
+function getTodolist() {
+ fetch(getTodolistUrl).then(data => data.json()).then(res => {todos = [...res]});
 }
-
-async function getTodo(_id) {
-    return await fetch(todoUrl + '/' + _id).then(data => data.json()).then(res => res);
-}
-// let filterSelectIndex = JSON.parse(localStorage.getItem('filterSelectIndex'));
 
 async function addItem(e) {
     e.preventDefault();
@@ -127,7 +121,7 @@ function populateList(todos = [], todoList) {
 
     }
 
-    renderFilterlist()
+    
 }
 
 function renderFilterlist(selectedFilter = "all"){
@@ -141,18 +135,10 @@ function renderFilterlist(selectedFilter = "all"){
 
 }
 
-
-// function populateFilter(filterSelected = 0, filterList){
-//     filterList.innerHTML = 
-//     `<button ${filterSelected == "all" ? 'class="active"':''} data-filter="all">All</button>
-//     <button ${filterSelected == "done" ? 'class="active"':''} data-filter="done">Done</button>
-//     <button ${filterSelected == "not-done" ? 'class="active"':''} data-filter="not-done">Active</button>`
-
-// }
-
 //-------Start fetching data
 (async function () {
     await getTodolist();
+    await renderFilterlist()
     await populateList(todos, todoList);
    
 })() 
@@ -160,5 +146,3 @@ function renderFilterlist(selectedFilter = "all"){
 addItems.addEventListener('submit', addItem);
 todoList.addEventListener('click', toggleDone);
 filterList.addEventListener('click', filterEvent);
-
-// populateFilter(filterSelected,filterList)
