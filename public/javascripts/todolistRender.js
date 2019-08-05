@@ -1,3 +1,4 @@
+const hostUrl = 'https://todoappfajar.herokuapp.com'
 const addItems = document.querySelector('.add-items');
 const todoList = document.querySelector('.todoList');
 const filterList = document.querySelector('.filterList');
